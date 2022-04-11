@@ -17,13 +17,11 @@
         <small
           class="helper-text invalid"
           v-if="v$.e_mail.$dirty && !v$.e_mail.required.$response"
-          >Поле Email не должно быть пустым</small
-        >
+        >Поле Email не должно быть пустым</small>
         <small
           class="helper-text invalid"
           v-else-if="v$.e_mail.$dirty && !v$.e_mail.email.$response"
-          >Введите корректный Email</small
-        >
+        >Введите корректный Email</small>
       </div>
       <div class="input-field">
         <input
@@ -41,15 +39,15 @@
         <small
           class="helper-text invalid"
           v-if="v$.password.$dirty && !v$.password.required.$response"
-          >Введите пароль</small
-        >
+        >Введите пароль</small>
         <small
           class="helper-text invalid"
           v-if="v$.password.$dirty && !v$.password.minLength.$response"
-          >Пароль не может быть меньше
-          {{ v$.password.minLength.$params.min }} символов, сейчас
-          {{ password.length }}</small
         >
+          Пароль не может быть меньше
+          {{ v$.password.minLength.$params.min }} символов, сейчас
+          {{ password.length }}
+        </small>
       </div>
     </div>
     <div class="card-action">
@@ -71,6 +69,7 @@
 <script>
 import {email, required, minLength} from '@vuelidate/validators'
 import {useVuelidate} from '@vuelidate/core'
+import messages from '../utils/messages'
 export default {
   name: 'Login',
   setup: () => ({v$: useVuelidate()}),
@@ -86,6 +85,13 @@ export default {
       password: {required, minLength: minLength(8)},
     }
   },
+  mounted() {
+    if(messages[this.$route.query.message]) {
+      console.log(messages[this.$route.query.message]);
+      this.$message(messages[this.$route.query.message])
+    }
+    else this.$message('Страница регистрации')
+  },
   methods: {
     async submitForm() {
       const result = await this.v$.$validate()
@@ -97,8 +103,14 @@ export default {
         email: this.e_mail,
         password: this.password,
       }
-      console.log(formData)
-      this.$router.push('/')
+
+      try {
+          await this.$store.dispatch('login', formData)
+          this.$router.push('/')
+      } catch(e) {
+        console.log('login error')
+      }
+      
     },
   },
 }

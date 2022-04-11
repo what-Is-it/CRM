@@ -3,55 +3,53 @@
     <div class="page-title">
       <h3>Счет</h3>
 
-      <button class="btn waves-effect waves-light btn-small">
+      <button class="btn waves-effect waves-light btn-small" @click="refresh" :disabled="disable">
         <i class="material-icons">refresh</i>
       </button>
     </div>
-    <div class="row">
-      <div class="col s12 m6 l4">
-        <div class="card light-blue bill-card">
-          <div class="card-content white-text">
-            <span class="card-title">Счет в валюте</span>
-
-            <p class="currency-line">
-              <span>10.0 Р</span>
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="col s12 m6 l8">
-        <div class="card orange darken-3 bill-card">
-          <div class="card-content white-text">
-            <div class="card-header">
-              <span class="card-title">Курс валют</span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Валюта</th>
-                  <th>Курс</th>
-                  <th>Дата</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr>
-                  <td>руб</td>
-                  <td>111</td>
-                  <td>11.11.22</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+    <Loader v-if="loading" />
+    <div class="row" v-else>
+      <HomeBill :rates="currency.rates" />
+      <HomeCurrency :rates="currency.rates" :date="currency.date" />
     </div>
   </div>
 </template>
 
 <script>
+import HomeBill from '../components/HomeBill'
+import HomeCurrency from '../components/HomeCurrency'
 export default {
-  name: 'home'
+  name: 'home',
+  components: {
+    HomeBill, HomeCurrency
+  },
+  data() {
+    return {
+      loading: true,
+      currency: null,
+      disable: false
+    }
+  },
+  async mounted() {
+    this.currency = await this.$store.dispatch('fetchCurrency')
+    if(!this.currency.success){
+      this.currency.rates = {
+        'RUB' : 80,
+        'USD' : 1.2,
+        'EUR' : 1
+      },
+      this.currency.date = new Date
+      this.disable = true
+    }
+    console.log(this.currency);
+    this.loading = false
+  },
+  methods: {
+    async refresh() {
+      this.loading = true
+      this.currency = await this.$store.dispatch('fetchCurrency')
+      this.loading = false
+    }
+  },
 }
 </script>

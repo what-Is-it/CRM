@@ -60,7 +60,7 @@ export default {
       this.date = dateFilter(new Date, ('datetime'))
     })
     console.log(this.$refs)
-    this.dropdown = window.M.Dropdown.init(this.$refs.drop, {constrainWidth: true})
+    this.dropdown = window.M.Dropdown.init(this.$refs.drop, {constrainWidth: false})
     
   },
   beforeUnmount() {

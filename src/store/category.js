@@ -15,7 +15,7 @@ export default {
           ? await dispatch('getUid')
           : localStorage.getItem('userUid')
         const categories =
-          (await get(child(ref(db), `/users/${uid}/categories`))).val() || []
+          (await get(child(ref(db), `/users/${uid}/categories`))).val() || {}
         /* const array = []
         Object.keys(categories).forEach((key) => {
           array.push({
@@ -29,6 +29,20 @@ export default {
           ...categories[key],
           id: key,
         }))
+      } catch (e) {
+        commit('setError', e)
+        throw new Error(e)
+      }
+    },
+    async fetchCategoryById({commit, dispatch}, id) {
+      try {
+        const uid = !localStorage.getItem('userUid')
+          ? await dispatch('getUid')
+          : localStorage.getItem('userUid')
+        const category =
+          (await get(child(ref(db), `/users/${uid}/categories/${id}`))).val() ||
+          {}
+        return {...category, id: id}
       } catch (e) {
         commit('setError', e)
         throw new Error(e)

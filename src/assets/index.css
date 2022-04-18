@@ -33,6 +33,7 @@
   transition: transform 0.3s;
   bottom: 0 !important;
   height: auto !important;
+  overflow: hidden;
 }
 .app-sidenav.open {
   -webkit-transform: translateX(0);
@@ -146,7 +147,7 @@
   color: rgba(0, 0, 0, 0.7) !important;
 }
 .history-chart {
-  max-width: 600px;
+  max-width: 360px;
   margin: 0 auto;
 }
 

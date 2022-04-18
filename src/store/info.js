@@ -1,5 +1,5 @@
 import {db} from '../firebase'
-import {ref, child, get} from 'firebase/database'
+import {ref, child, get, update} from 'firebase/database'
 export default {
   state: {
     info: {},
@@ -13,6 +13,19 @@ export default {
     },
   },
   actions: {
+    async updateInfo({commit, dispatch, getters}, toUpdate) {
+      try {
+        const uid = !localStorage.getItem('userUid')
+          ? await dispatch('getUid')
+          : localStorage.getItem('userUid')
+        const updateData = {...getters.info, ...toUpdate}
+        await update(ref(db, `/users/${uid}/info`), updateData)
+        commit('setInfo', updateData)
+      } catch (e) {
+        commit('setError', e)
+        throw new Error(e)
+      }
+    },
     async userInfo({commit, dispatch}) {
       try {
         const uid = !localStorage.getItem('userUid')
@@ -22,6 +35,7 @@ export default {
         const info = (await get(child(ref(db), `/users/${uid}/info`))).val()
         commit('setInfo', info)
       } catch (e) {
+        commit('setError', e)
         throw new Error(e)
       }
     },
